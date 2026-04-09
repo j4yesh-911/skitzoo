@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #02091c;
+  --bg2: #0f1a3b;
+  --panel: rgba(14, 24, 43, 0.68);
+  --panel-border: rgba(101, 116, 248, 0.25);
+  --text-main: #e8eff9;
+  --text-muted: #8fa9d4;
+  --brand-primary: #4f46e5;
+  --brand-secondary: #3b82f6;
+  --brand-accent: #22d3ee;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Inter', 'Syne', Arial, sans-serif;
+  color: var(--text-main);
+  background: radial-gradient(circle at 12% 20%, #1e3a75 0%, var(--bg) 45%, #020612 95%);
+}
+
+.app-page { min-height: 100vh; }
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(10, 19, 34, 0.84);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  backdrop-filter: blur(14px);
+  padding: 1rem 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.app-container {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  padding: 2rem 1.2rem 3rem;
+}
+
+.box-glass {
+  background: rgba(18, 29, 49, 0.61);
+  border: 1px solid var(--panel-border);
+  border-radius: 1rem;
+  box-shadow: 0 14px 32px rgba(8, 12, 24, 0.45);
+  backdrop-filter: blur(16px);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.title-group { display: flex; align-items: baseline; gap: 0.75rem; }
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 999px;
+  color: rgba(255,255,255,0.78);
+  text-transform: uppercase;
+}
+
+.search-wrap { position: relative; width: 100%; }
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(148, 163, 184, 0.9);
+  pointer-events: none;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: rgba(166, 180, 215, 0.9);
+  cursor: pointer;
+  border-radius: 0.35rem;
+}
+
+.clear-btn:hover { color: #f8fafc; }
+
+.search-group {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  gap: 0.7rem;
+  margin-left: auto;
+}
+
+.input-modern {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  padding: 0.65rem 0.85rem 0.65rem 2.55rem;
+  background: rgba(18, 27, 45, 0.73);
+  color: var(--text-main);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.input-modern::placeholder { color: rgba(148, 163, 184, 0.7); }
+
+.input-modern:focus {
+  border-color: rgba(96, 165, 250, 0.8);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.22);
+  background: rgba(19, 31, 52, 0.92);
+}
+
+.btn-primary {
+  background: linear-gradient(130deg, rgba(79, 70, 229, 0.95), rgba(59, 130, 246, 0.95));
+  border: 1px solid rgba(79, 70, 229, 0.42);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 16px 35px rgba(13, 66, 140, 0.45);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.btn-primary:hover { transform: translateY(-1px); filter: brightness(1.05); }
+
+.btn-secondary {
+  background: rgba(25, 35, 60, 0.6);
+  border: 1px solid rgba(148,163,184,0.4);
+  color: #d1d9e7;
+}
+
+@media (max-width: 768px) {
+  .app-header { justify-content: center; padding: 0.9rem; }
+  .search-group { max-width: 100%; margin-left: 0; flex-wrap: wrap; }
+  .app-container { padding: 1.2rem 1rem 2rem; }
+  .card-grid { grid-template-columns: 1fr; }
+}
+
+.auth-box input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+}
+
+.auth-box button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  background: linear-gradient(to right, #7c3aed, #38bdf8);
+  color: white;
+  border: none;
+  border-radius: 6px;
+}
+
+
+/* ===== Custom Scrollbar (Chat Style) ===== */
+
+
+
+.text-neon {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+
+/* Chrome, Edge, Safari */
+/* ===== Ultra Slim Scrollbar ===== */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 4px;          /* 👈 VERY SLIM */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.25) transparent;
+}
+
+
+
+
