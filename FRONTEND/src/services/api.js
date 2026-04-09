@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL:" https://skitzoo-1.onrender.com" ||"http://localhost:5000/api",
 });
 
 // Track if we're already handling logout to prevent infinite loops
