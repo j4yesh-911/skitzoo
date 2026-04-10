@@ -1722,11 +1722,12 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("CORS not allowed"));
+        console.log("❌ Blocked by CORS:", origin);
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
@@ -1766,7 +1767,10 @@ app.use("/api/ai", aiRoutes);
 /* ================= SOCKET ================= */
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: [
+      "http://localhost:5173",
+      "https://skitzoo.vercel.app", // ✅ ADD THIS
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
