@@ -693,8 +693,6 @@
 
 
 
-
-
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -784,9 +782,10 @@ const STYLES = `
 
 /* ── incoming call overlay ── */
 .ch-call-overlay{
-  position:fixed;inset:0;z-index:200;
+  position:fixed;inset:0;z-index:99999;
   display:flex;align-items:center;justify-content:center;
   background:rgba(0,0,0,0.82);backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
 }
 .ch-call-card{
   background:var(--ch-surf2);border:1px solid var(--ch-border2);
@@ -1300,6 +1299,8 @@ export default function Chat() {
       </AnimatePresence>
 
       {/* ── MAIN CHAT LAYOUT ── */}
+      {/* NOTE: incoming call overlay is intentionally rendered BEFORE (outside) this div
+          so no parent stacking context or navbar can cover it */}
       <div className="ch" style={{
         // FIX: Use dvh + safe area so it fills exactly the visible screen on mobile
         height: "100dvh",
