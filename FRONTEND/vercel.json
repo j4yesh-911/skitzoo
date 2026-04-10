@@ -1,5 +1,8 @@
 {
-  "routes": [
-    { "src": "/(.*)", "dest": "/" }
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://skitzoo-1.onrender.com/$1"
+    }
   ]
 }
