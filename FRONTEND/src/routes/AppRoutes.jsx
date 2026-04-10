@@ -23,7 +23,7 @@ import Feed from "../pages/Feed";
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<Login />} />
       {/* <Route path="/auth" element={<Auth />} /> */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
