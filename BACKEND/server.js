@@ -1677,8 +1677,6 @@ require("dotenv").config({ path: require("path").join(__dirname, ".env") });
 
 require("dotenv").config({ path: require("path").join(__dirname, ".env") });
 
-const aiRoutes = require("./routes/aiRoutes");
-
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -1697,7 +1695,8 @@ const messageRoutes = require("./routes/messageRoutes");
 const likeRoutes = require("./routes/likeRoutes");
 const swapRoutes = require("./routes/swapRoutes");
 const reportRoutes = require("./routes/reportRoutes");
-const postRoutes = require("./routes/postRoutes"); // keep friend feature
+const postRoutes = require("./routes/postRoutes");
+const aiRoutes = require("./routes/aiRoutes");
 
 // MODELS
 const Message = require("./models/Message");
@@ -1711,23 +1710,34 @@ const server = http.createServer(app);
 /* ================= DB ================= */
 connectDB();
 
-/* ================= MIDDLEWARE ================= */
+/* ================= CORS ================= */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://localhost:5176",
+    "https://skitzoo.vercel.app",
+  process.env.FRONTEND_URL, // ✅ production
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5175",
-      "http://localhost:5176",
-    ],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
     credentials: true,
-  }),
+  })
 );
 
+/* ================= MIDDLEWARE ================= */
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-/* ================= STATIC UPLOADS (Temporary Safety) ================= */
+/* ================= STATIC ================= */
 app.use(
   "/uploads",
   express.static(path.join(__dirname, "uploads"), {
@@ -1738,42 +1748,27 @@ app.use(
       else if (filePath.endsWith(".mp3"))
         res.setHeader("Content-Type", "audio/mpeg");
     },
-  }),
+  })
 );
 
 /* ================= ROUTES ================= */
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/chats", chatRoutes); // keep both (your logic)
 app.use("/api/messages", messageRoutes);
 app.use("/api/likes", likeRoutes);
 app.use("/api/swaps", swapRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/posts", postRoutes);
-
-module.exports = { app, server };
-
-/* ================= ROUTES ================= */
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/chats", chatRoutes);
-app.use("/api/messages", messageRoutes);
-app.use("/api/likes", likeRoutes);
-app.use("/api/swaps", swapRoutes);
-app.use("/api/reports", reportRoutes);
-app.use("/api/ai", aiRoutes); // ✅ OpenRouter AI routes
-// app.use("/api/posts", postRoutes);
+app.use("/api/ai", aiRoutes);
 
 /* ================= SOCKET ================= */
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:5175",
-      "http://localhost:5176",
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
@@ -1786,12 +1781,12 @@ io.on("connection", (socket) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       socket.userId = decoded.id;
       io.emit("userOnline", { userId: socket.userId });
-    } catch (err) {
+    } catch {
       console.log("❌ Socket authentication failed");
     }
   });
 
-  /* ---------- REPORT BLOCK CHECK ---------- */
+  /* ---------- BLOCK CHECK ---------- */
   const isInteractionBlocked = async (chatId, userId) => {
     const chat = await Chat.findById(chatId).select("members");
     if (!chat) return true;
@@ -1838,7 +1833,7 @@ io.on("connection", (socket) => {
     if (unseen.length) {
       await Message.updateMany(
         { _id: { $in: unseen.map((m) => m._id) } },
-        { status: "seen" },
+        { status: "seen" }
       );
 
       io.to(chatId).emit("messageStatusUpdate", {
@@ -1858,10 +1853,7 @@ io.on("connection", (socket) => {
       $addToSet: { typingUsers: socket.userId },
     });
 
-    socket.to(chatId).emit("typing", {
-      chatId,
-      userId: socket.userId,
-    });
+    socket.to(chatId).emit("typing", { chatId, userId: socket.userId });
 
     setTimeout(async () => {
       await Chat.findByIdAndUpdate(chatId, {
@@ -1902,13 +1894,11 @@ io.on("connection", (socket) => {
     };
 
     if (type === "voice") {
-      // 🚫 block server disk paths
-      if (audioUrl && (audioUrl.includes(":\\") || audioUrl.includes(":\\"))) {
-        console.warn("❌ Blocked invalid voice audioUrl:", audioUrl);
-        return;
-      }
+      if (audioUrl && audioUrl.includes(":\\")) return;
       messageData.audioUrl = audioUrl;
-    } else messageData.text = text;
+    } else {
+      messageData.text = text;
+    }
 
     const message = await Message.create(messageData);
 
@@ -1929,10 +1919,7 @@ io.on("connection", (socket) => {
       },
     });
 
-    socket.emit("receiveMessage", {
-      ...message.toObject(),
-      status: "sent",
-    });
+    socket.emit("receiveMessage", message);
 
     await Message.findByIdAndUpdate(message._id, {
       status: "delivered",
@@ -1972,32 +1959,31 @@ io.on("connection", (socket) => {
   });
 
   /* ---------- WEBRTC ---------- */
-  socket.on("webrtcOffer", async ({ chatId, offer }) => {
-    if (await isInteractionBlocked(chatId, socket.userId)) return;
-    socket.to(chatId).emit("webrtcOffer", offer);
-  });
+  socket.on("webrtcOffer", ({ chatId, offer }) =>
+    socket.to(chatId).emit("webrtcOffer", offer)
+  );
 
-  socket.on("webrtcAnswer", async ({ chatId, answer }) => {
-    if (await isInteractionBlocked(chatId, socket.userId)) return;
-    socket.to(chatId).emit("webrtcAnswer", answer);
-  });
+  socket.on("webrtcAnswer", ({ chatId, answer }) =>
+    socket.to(chatId).emit("webrtcAnswer", answer)
+  );
 
-  socket.on("iceCandidate", async ({ chatId, candidate }) => {
-    if (await isInteractionBlocked(chatId, socket.userId)) return;
-    socket.to(chatId).emit("iceCandidate", candidate);
-  });
+  socket.on("iceCandidate", ({ chatId, candidate }) =>
+    socket.to(chatId).emit("iceCandidate", candidate)
+  );
 
-  socket.on("callEnd", ({ chatId }) => socket.to(chatId).emit("callEnd"));
+  socket.on("callEnd", ({ chatId }) =>
+    socket.to(chatId).emit("callEnd")
+  );
 
   socket.on("callDeclined", ({ chatId }) =>
-    socket.to(chatId).emit("callDeclined"),
+    socket.to(chatId).emit("callDeclined")
   );
 });
 
-/* ================= START SERVER ================= */
+/* ================= START ================= */
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Backend running on http://localhost:${PORT}`);
+  console.log(`🚀 Backend running on ${PORT}`);
 });
 
-module.exports = { io };
+module.exports = { app, server, io };

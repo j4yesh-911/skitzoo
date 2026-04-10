@@ -4,7 +4,11 @@ let socket;
 
 export const getSocket = () => {
   if (!socket) {
-    socket = io(import.meta.env.VITE_API_URL ||"http://localhost:5000", {
+    const BASE_URL =
+      import.meta.env.VITE_API_URL?.replace("/api", "") ||
+      "http://localhost:5000";
+
+    socket = io(BASE_URL, {
       transports: ["websocket"],
     });
 
@@ -20,11 +24,13 @@ export const getSocket = () => {
       console.error("🔌 Socket connection error:", error);
     });
 
-    // Authenticate user
-    const token = localStorage.getItem("token");
-    if (token) {
-      socket.emit("authenticate", token);
-    }
+    // Authenticate AFTER connection
+    socket.on("connect", () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        socket.emit("authenticate", token);
+      }
+    });
   }
   return socket;
 };
