@@ -1,9 +1,12 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL:"https://skitzoo-1.onrender.com/api"
-  // baseURL:"https://skitzoo-1.onrender.com/api"||"http://localhost:5000/api",
+  baseURL: "https://skitzoo-1.onrender.com/api",
+  // baseURL: "https://skitzoo-1.onrender.com/api" || "http://localhost:5000/api",
 });
+// const API = axios.create({
+//   baseURL: "http://localhost:5000/api",
+// });
 
 // Track if we're already handling logout to prevent infinite loops
 let isLoggingOut = false;
@@ -19,7 +22,7 @@ API.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Response interceptor: Handle 401 errors and auto-logout
@@ -34,8 +37,9 @@ API.interceptors.response.use(
     // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
       // Check if this is a token expiration error
-      const isTokenExpired = error.response?.data?.code === "TOKEN_EXPIRED" || 
-                            error.response?.data?.msg?.toLowerCase().includes("expired");
+      const isTokenExpired =
+        error.response?.data?.code === "TOKEN_EXPIRED" ||
+        error.response?.data?.msg?.toLowerCase().includes("expired");
 
       // Prevent infinite retry loops
       if (!originalRequest._retry && !isLoggingOut) {
@@ -51,7 +55,10 @@ API.interceptors.response.use(
 
         // Only redirect if we're not already on login/signup page
         const currentPath = window.location.pathname;
-        if (!currentPath.includes("/login") && !currentPath.includes("/signup")) {
+        if (
+          !currentPath.includes("/login") &&
+          !currentPath.includes("/signup")
+        ) {
           // Use setTimeout to avoid navigation during render
           setTimeout(() => {
             window.location.href = "/login";
@@ -61,10 +68,10 @@ API.interceptors.response.use(
         // Reject the promise to stop further processing
         return Promise.reject({
           ...error,
-          message: isTokenExpired 
-            ? "Your session has expired. Please login again." 
+          message: isTokenExpired
+            ? "Your session has expired. Please login again."
             : "Unauthorized. Please login again.",
-          isTokenExpired
+          isTokenExpired,
         });
       }
     }
@@ -76,7 +83,7 @@ API.interceptors.response.use(
 
     // For all other errors, reject normally
     return Promise.reject(error);
-  }
+  },
 );
 
 export default API;

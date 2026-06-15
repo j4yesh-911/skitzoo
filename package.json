@@ -4,6 +4,8 @@
     "dotenv": "^17.2.3",
     "emoji-picker-react": "^4.16.1",
     "framer-motion": "^12.23.26",
+    "google-auth-library": "^10.7.0",
+    "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2"
   }
 }

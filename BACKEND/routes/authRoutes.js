@@ -4,7 +4,12 @@ const router = express.Router();
 
 console.log("AUTH ROUTES FILE LOADED");
 
-const { signup, login, getMe } = require("../controllers/authController");
+const {
+  signup,
+  login,
+  getMe,
+  googleLogin,
+} = require("../controllers/authController");
 const authMiddleware = require("../middleware/authMiddleware");
 
 router.get("/ping", (req, res) => {
@@ -14,5 +19,6 @@ router.get("/ping", (req, res) => {
 router.post("/signup", signup);
 router.post("/login", login);
 router.get("/me", authMiddleware, getMe); // ✅ protected
+router.post("/google", googleLogin);
 
 module.exports = router;

@@ -48,7 +48,6 @@
 //   },
 //   { timestamps: true }
 
-
 // );
 
 // // Add indexes for better query performance
@@ -57,11 +56,6 @@
 // userSchema.index({ _id: 1, isProfileComplete: 1 }); // Compound index for getAllUsers query
 
 // module.exports = mongoose.model("User", userSchema);
-
-
-
-
-
 
 const mongoose = require("mongoose");
 
@@ -89,23 +83,28 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      default: "",
+    },
+    googleId: {
+      type: String,
+      default: "",
     },
 
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
 
-
-// ================= MODERATION =================
-isBanned: {
-  type: Boolean,
-  default: false,
-},
-banUntil: {
-  type: Date,
-  default: null,
-},
-
-
-
+    // ================= MODERATION =================
+    isBanned: {
+      type: Boolean,
+      default: false,
+    },
+    banUntil: {
+      type: Date,
+      default: null,
+    },
 
     // ================= PERSONAL INFO =================
     age: Number,
@@ -153,10 +152,8 @@ banUntil: {
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
-
-
 
 // ================= INDEXES =================
 userSchema.index({ email: 1 });
