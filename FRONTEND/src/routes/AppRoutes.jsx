@@ -18,10 +18,11 @@ import MyReports from "../pages/MyReports";
 import AdminReports from "../pages/AdminReports";
 import Dashboardd from "../pages/Dashboardd";
 import Feed from "../pages/Feed";
-
+import { BrowserRouter } from "react-router-dom";
 
 export default function AppRoutes() {
   return (
+        <BrowserRouter>
     <Routes>
       <Route path="/" element={<Login />} />
       {/* <Route path="/auth" element={<Auth />} /> */}
@@ -46,5 +47,6 @@ export default function AppRoutes() {
 
       {/* <Route path="/session/:id" element={<Session />} /> */}
     </Routes>
+</BrowserRouter>
   );
 }
