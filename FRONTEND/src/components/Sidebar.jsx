@@ -12,6 +12,8 @@ import {
   CircleStop,
   OctagonAlert,
   OctagonXIcon,
+  Newspaper,
+  Tv,
 } from "lucide-react";
 
 export default function Sidebar({ isOpen, onClose, unreadChats }) {
@@ -69,9 +71,11 @@ export default function Sidebar({ isOpen, onClose, unreadChats }) {
             <Item label="Match" icon={<Shuffle size={16} />} onClick={() => go("/match")} />
             <Item label="Swappers" icon={<Users size={16} />} onClick={() => go("/swappers")} />
             <Item label="Requests" icon={<Handshake size={16} />} onClick={() => go("/swap-requests")} />
+            <Item label="Feed" icon={<Tv size={16} />} onClick={() => go("/feed")} />
             <Item label="Reports" icon={<OctagonXIcon size={16} />} onClick={() => go("/reports/my")} />
             <Item label="Profile" icon={<User size={16} />} onClick={() => go("/profile")} />
             {/* <Item label="About" icon={<Info size={16} />} onClick={() => go("/about")} /> */}
+
             <Item label="dashboard" icon={<Info size={16} />} onClick={() => go("/dashboardd")} />
           </nav>
 

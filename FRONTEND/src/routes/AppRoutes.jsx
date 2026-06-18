@@ -26,7 +26,7 @@ export default function AppRoutes() {
       <Route path="/" element={<Login />} />
       {/* <Route path="/auth" element={<Auth />} /> */}
       <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      {/* <Route path="/signup" element={<Signup />} /> */}
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/live" element={<LiveSession />} />
       <Route path="/chats" element={<ChatsList />} />

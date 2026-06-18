@@ -243,14 +243,14 @@ export default function Navbar({ onToggleSidebar }) {
 
         {/* CENTER */}
         <div className="hidden md:flex gap-8">
-          <button
+          {/* <button
             onClick={() => go("/")}
             className="flex items-center gap-2 px-4 py-2 rounded-xl 
               hover:bg-white/40 dark:hover:bg-white/5 transition"
           >
             <Home size={18} />
             Home
-          </button>
+          </button> */}
 
           <button
             onClick={() => go("/dashboard")}
